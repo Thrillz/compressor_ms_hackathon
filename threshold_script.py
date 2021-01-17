@@ -9,7 +9,7 @@ import pandas as pd
 import os
     
 def threshold(df, filename, alarm=False):
-    threshold_list = [0]*14
+    threshold_list = [0]*7
     counter = 0
     
     for i,j in enumerate(df):
@@ -30,7 +30,7 @@ def threshold(df, filename, alarm=False):
                     alarm = False
                     list_df['alarm'] = alarm
                     appendDFToCSV_void(list_df, filename)
-                    threshold_list = [0]*14
+                    threshold_list = [0]*7
                     counter = 0
 
                 else:
