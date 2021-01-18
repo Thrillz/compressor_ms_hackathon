@@ -41,10 +41,10 @@ class aggregate_dataframe():
         self.df = self.df.replace(',','.', regex=True)
         self.df = self.df.apply(pd.to_numeric)
         self.df = self.df[self.df.columns.drop(list(self.df.filter(regex='Misc|Suction Temp Target| AG')))]
-        if self.site_id != 52253:
+        if self.site_id == 52253:
             self.df = self.df.rename(columns={'Compressor B4': "Compressor B 4 1"})
         
-        if self.site_id != 18641:
+        if self.site_id == 18641:
             self.df = self.df.rename(columns={'Disch Pres': "Disch Pres D 1"})
             
         rd = remove_duplicates(self.df, self.site_id)
