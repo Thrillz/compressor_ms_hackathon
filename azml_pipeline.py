@@ -56,11 +56,11 @@ parallel_run_config = ParallelRunConfig(
     compute_target=compute,
     node_count=node_count)
 
-from azureml.pipeline.core import PipelineData
+from azureml.data import OutputFileDatasetConfig
 
-output_dir = PipelineData(name="training_output", datastore=dstore)
-
+output_dataset = OutputFileDatasetConfig(name='batch_results', destination=( dstore, 'train-results/{​​run-id}​​'))
 from azureml.pipeline.steps import ParallelRunStep
+
 
 parallel_run_step = ParallelRunStep(
     name="many-models-training",
@@ -68,12 +68,7 @@ parallel_run_step = ParallelRunStep(
     inputs=[dataset_input],
     output=output_dir,
     allow_reuse=False,
-    arguments=['--target_column', 'Quantity', 
-               '--timestamp_column', 'WeekStarting', 
-               '--timeseries_id_columns', 'Store', 'Brand',
-               '--drop_columns', 'Revenue', 'Store', 'Brand',
-               '--model_type', 'lr',
-               '--test_size', 20]
+    arguments=['--output_path', output_dataset]
 )
 
 from azureml.pipeline.core import Pipeline
@@ -84,14 +79,5 @@ run = experiment.submit(pipeline)
 #Wait for the run to complete
 run.wait_for_completion(show_output=False, raise_on_error=True)
 
-import os
 
-def download_results(run, target_dir=None, step_name='many-models-training', output_name='training_output'):
-    stitch_run = run.find_step_run(step_name)[0]
-    port_data = stitch_run.get_output_data(output_name)
-    port_data.download(target_dir, show_progress=True)
-    return os.path.join(target_dir, 'azureml', stitch_run.id, output_name)
-
-file_path = download_results(run, 'output')
-file_path
 
